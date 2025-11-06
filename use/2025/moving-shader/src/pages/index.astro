@@ -12,14 +12,14 @@
   </head>
   <body>
     <h1>Moving Shader</h1>
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" data-canvas></canvas>
   </body>
 </html>
 
-<script type="module" lang="ts">
+<script>
   import * as THREE from "three";
 
-  const canvas = document.getElementById("canvas");
+  const canvas = document.querySelector("[data-canvas]");
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
     75,
@@ -27,10 +27,24 @@
     0.1,
     1000
   );
-  const renderer = new THREE.WebGLRenderer({ canvas });
+  if (!canvas) {
+    throw new Error("Canvas not found");
+  }
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: true,
+  });
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
   camera.position.z = 5;
-  renderer.render(scene, camera);
+
+  tick();
+  // Update Loop
+  function tick() {
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
 </script>
 
 <style lang="scss" scoped>
