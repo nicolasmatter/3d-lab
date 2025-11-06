@@ -9,7 +9,12 @@
 [threejsresources.com](https://threejsresources.com/) ✰
 
 [tympanus.net/codrops/hub](https://tympanus.net/codrops/hub/)
+
 [awesome-threejs](https://github.com/AxiomeCG/awesome-threejs)
+
+[graphics-library.net](https://graphics-library.net/)
+
+[fuse.kiwi](https://www.fuse.kiwi/)
 
 ### Community
 
