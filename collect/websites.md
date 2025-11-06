@@ -12,7 +12,7 @@ A collection of websites with inspiring 3D experiences.
 
 [offficestud.io](https://offficestud.io/) - Transition between 3D objects
 
-[locomotive.ca](https://locomotive.ca/en/agency) - Team members as 3D scanned avatars with walk animation
+[locomotive.ca](https://locomotive.ca/en/agency) - 3D scanned avatars with walk animation
 
 ### 2024
 
