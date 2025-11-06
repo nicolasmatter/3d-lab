@@ -1,29 +1,33 @@
-# Astro Starter Kit: Minimal
+# Moving Shader
 
-```sh
-npm create astro@latest -- --template minimal
-```
+An interactive WebGL shader experiment that creates a dynamic RGB shift effect based on mouse movement. The shader applies chromatic aberration that responds to mouse velocity and position, with distance-based delay creating a wave-like bounce-back effect.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Features
 
-## 🚀 Project Structure
+- **Mouse-tracking RGB shift**: Chromatic aberration effect that follows mouse movement
+- **Velocity-based offset**: Faster mouse movement creates stronger distortion
+- **Distance-based delay**: Pixels closer to the mouse bounce back faster, creating a ripple effect
+- **Custom GLSL shaders**: Vertex and fragment shaders for bend distortion and RGB separation
+- **Three.js integration**: WebGL rendering with perspective camera and scene management
 
-Inside of your Astro project, you'll see the following folders and files:
+## Project Structure
 
 ```text
 /
 ├── public/
+│   └── image.png          # Texture image for the shader
 ├── src/
-│   └── pages/
-│       └── index.astro
+│   ├── pages/
+│   │   └── index.astro    # Main page with Three.js setup
+│   ├── shaders/
+│   │   ├── vertex.glsl    # Vertex shader for bend distortion
+│   │   └── fragment.glsl # Fragment shader for RGB shift
+│   └── webgl/
+│       ├── getBendShaderMaterial.ts  # Shader material setup
+│       ├── usePerspectiveCamera.ts   # Camera utilities
+│       └── useScene.ts               # Scene utilities
 └── package.json
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
 
 ## 🧞 Commands
 
@@ -38,17 +42,89 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 👀 Want to learn more?
+## Getting Started
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Installation
 
+```bash
+npm install
+```
+
+### Development
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:4321`
+
+### Build
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+## How It Works
+
+1. **Mouse Tracking**: The mouse position and movement delta are tracked in real-time
+2. **Offset Calculation**: Mouse movement speed and direction are converted to offset values
+3. **Shader Application**: The offset is passed to the shader material, which applies:
+   - **RGB Shift**: Red and blue channels are shifted in opposite directions
+   - **Distance-based Delay**: Pixels further from the mouse position maintain the effect longer
+4. **Decay**: The offset gradually decays back to zero, creating a smooth bounce-back effect
+
+## Customization
+
+### Adjust Offset Strength
+
+In `src/pages/index.astro`, modify the `offsetStrength` object:
+
+```javascript
+const offsetStrength = {
+  x: 0.0006, // Horizontal offset multiplier
+  y: 0.0006, // Vertical offset multiplier
+};
+```
+
+### Adjust Decay Rate
+
+In the `tick()` function, modify the decay value:
+
+```javascript
+const decay = 0.95; // Closer to 1.0 = slower decay
+```
+
+### Modify Shader Effects
+
+Edit the shader files in `src/shaders/`:
+
+- `vertex.glsl`: Controls the 3D bend/distortion
+- `fragment.glsl`: Controls the RGB shift and distance-based delay
 
 ## Year
+
 2025
 
 ## Key Learnings
-- Learning point 1
-- Learning point 2
+
+- GLSL shader programming with Three.js
+- Mouse tracking and velocity calculation
+- Distance-based effects in fragment shaders
+- RGB shift/chromatic aberration techniques
+- Smooth decay animations for interactive effects
 
 ## Resources
-- Link to relevant resources
+
+- [Three.js Documentation](https://threejs.org/docs/)
+- [GLSL Shader Language](https://www.khronos.org/opengl/wiki/OpenGL_Shading_Language)
+- [Astro Documentation](https://docs.astro.build)
