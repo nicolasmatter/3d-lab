@@ -31,6 +31,8 @@
   scene.userData.boundingRect = scene.userData.element?.getBoundingClientRect();
   scene.userData.updateRect = updateRect;
   scene.userData.updateSizes = updateSizes;
+  /* shader material */
+  const material = getBendShaderMaterial();
 
   const sizes = {
     width: 0.5,
@@ -55,6 +57,11 @@
 
   // Update Loop
   function tick() {
+    // Decay offset back to zero
+    const decay = 0.95;
+    if (material) {
+      material.uniforms.uOffset.value.multiplyScalar(decay);
+    }
     renderer.render(scene, scene.userData.perspectiveCamera.camera);
     requestAnimationFrame(tick);
   }
@@ -72,9 +79,6 @@
     y: 0.0006,
   };
 
-  /* shader material */
-  const material = getBendShaderMaterial();
-
   material.uniforms.uMeshSize.value.x = worldSizes.width;
   material.uniforms.uMeshSize.value.y = worldSizes.height;
 
@@ -90,7 +94,13 @@
   function onMouseMove(event: MouseEvent) {
     mouse.previous.copy(mouse.current);
     mouse.current.set(event.clientX, event.clientY);
-    material.uniforms.uMouse.value.copy(mouse.current);
+
+    // Normalize mouse position to [0, 1] range for UV space
+    const normalizedMouse = new THREE.Vector2(
+      event.clientX / window.innerWidth,
+      1.0 - event.clientY / window.innerHeight // Flip Y axis for UV coordinates
+    );
+    material.uniforms.uMouse.value.copy(normalizedMouse);
 
     // Calculate delta between previous and current position
     const mouseDeltaX = mouse.current.x - mouse.previous.x;
