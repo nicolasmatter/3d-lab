@@ -1,15 +1,26 @@
 # 3d-lab
 
-Research, prototyping, and documentation for Web 3D (Collect → Use → Note → Teach).
+This is my personal lab for Web 3D development. It is split into four categories:
+
+- Collect: Resources, Collections, Libraries, Websites - Everything I collect and find useful for my 3D projects
+- Use: Small prototypes and experiments
+- Note: Documentation and Thoughts on projects and possible improvements
+- Teach: For improved understanding and sharing knowledge
 
 ## Structure
-- `collect/`: research notes and findings
-- `use/`: prototypes (shaders, boilerplate, demos)
-- `note/`: documentation and knowledge base
-- `teach/`: slides and teaching materials
-- `docs/`: plans and longer documents
-- `src/`: shared code for prototypes
-- `scripts/`: automation utilities
 
-## Getting Started
-- See `docs/3D-Expertise-Plan.md` as the working checklist.
+- `collect/`
+  - [resources](collect/resources.md)
+  - [libraries](collect/libraries.md)
+  - [websites](collect/websites.md)
+- `use/`
+  - [prototypes overview](use/prototypes.md)
+- `note/`
+  - [documentation overview](note/thoughts.md)
+- `teach/`
+
+- `src/`: for if this should become a website, this is where the code will be stored
+
+## TODO
+
+- See `todo.md` as the working checklist.
