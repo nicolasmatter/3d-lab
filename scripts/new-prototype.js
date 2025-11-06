@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { execSync } = require("child_process");
 
 // Parse command line arguments and optionally prompt for project name
 const args = process.argv.slice(2);
@@ -33,6 +34,16 @@ async function resolveName() {
   }
 }
 
+// Ask for project type
+async function askProjectType() {
+  const answer = await askQuestion("Project type? (empty/astro) [empty]: ");
+  const type = (answer || "empty").trim().toLowerCase();
+  if (type === "astro" || type === "a") {
+    return "astro";
+  }
+  return "empty";
+}
+
 // Sanitize prototype name (kebab-case)
 function toKebabCase(name) {
   return name
@@ -42,7 +53,10 @@ function toKebabCase(name) {
 }
 
 async function main() {
+  const originalCwd = process.cwd();
+
   await resolveName();
+  const projectType = await askProjectType();
   const sanitizedName = toKebabCase(prototypeName);
   const year = new Date().getFullYear().toString();
 
@@ -57,7 +71,7 @@ async function main() {
     console.log(`✓ Created year directory: ${year}/`);
   }
 
-  // Create prototype directory
+  // Check if prototype directory already exists
   if (fs.existsSync(prototypeDir)) {
     console.error(
       `Error: Prototype "${sanitizedName}" already exists in ${year}/`
@@ -65,11 +79,35 @@ async function main() {
     process.exit(1);
   }
 
-  fs.mkdirSync(prototypeDir, { recursive: true });
-  console.log(`✓ Created prototype directory: ${year}/${sanitizedName}/`);
+  if (projectType === "astro") {
+    // For Astro, we'll let npm create astro create the directory
+    console.log(`\n🚀 Setting up Astro project...`);
+    try {
+      // Change to year directory and run Astro CLI
+      process.chdir(yearDir);
+      execSync(
+        `npm create astro@latest ${sanitizedName} -- --template minimal --yes --no-install --no-git`,
+        { stdio: "inherit" }
+      );
+      console.log(`✓ Astro project created`);
+      // Restore original working directory
+      process.chdir(originalCwd);
+    } catch (error) {
+      process.chdir(originalCwd);
+      console.error("Error creating Astro project:", error.message);
+      process.exit(1);
+    }
+  } else {
+    // Create empty prototype directory
+    fs.mkdirSync(prototypeDir, { recursive: true });
+    console.log(`✓ Created prototype directory: ${year}/${sanitizedName}/`);
+  }
 
-  // Create .gitignore
-  const gitignoreContent = `# Dependencies
+  // Only create .gitignore and README for empty projects
+  // Astro projects already have their own setup
+  if (projectType === "empty") {
+    // Create .gitignore
+    const gitignoreContent = `# Dependencies
 node_modules/
 .pnp
 .pnp.js
@@ -108,13 +146,13 @@ Thumbs.db
 .nuxt/
 `;
 
-  fs.writeFileSync(path.join(prototypeDir, ".gitignore"), gitignoreContent);
-  console.log("✓ Created .gitignore");
+    fs.writeFileSync(path.join(prototypeDir, ".gitignore"), gitignoreContent);
+    console.log("✓ Created .gitignore");
 
-  // Create README template
-  const readmeContent = `# ${sanitizedName
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase())}
+    // Create README template
+    const readmeContent = `# ${sanitizedName
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (l) => l.toUpperCase())}
 
 ## Description
 Brief description of what this prototype demonstrates.
@@ -135,8 +173,29 @@ ${year}
 - Link to relevant resources
 `;
 
-  fs.writeFileSync(path.join(prototypeDir, "README.md"), readmeContent);
-  console.log("✓ Created README.md");
+    fs.writeFileSync(path.join(prototypeDir, "README.md"), readmeContent);
+    console.log("✓ Created README.md");
+  } else {
+    // For Astro, update the README that was created
+    const astroReadmePath = path.join(prototypeDir, "README.md");
+    if (fs.existsSync(astroReadmePath)) {
+      const existingReadme = fs.readFileSync(astroReadmePath, "utf8");
+      const updatedReadme = `${existingReadme}
+
+## Year
+${year}
+
+## Key Learnings
+- Learning point 1
+- Learning point 2
+
+## Resources
+- Link to relevant resources
+`;
+      fs.writeFileSync(astroReadmePath, updatedReadme);
+      console.log("✓ Updated README.md");
+    }
+  }
 
   // Update prototypes.md
   const prototypesMdPath = path.join(useDir, "prototypes.md");
@@ -177,7 +236,12 @@ ${year}
   );
   console.log(`\nNext steps:`);
   console.log(`  cd use/${year}/${sanitizedName}`);
-  console.log(`  # Initialize your project (npm init, etc.)`);
+  if (projectType === "astro") {
+    console.log(`  npm install`);
+    console.log(`  npm run dev`);
+  } else {
+    console.log(`  # Initialize your project (npm init, etc.)`);
+  }
 }
 
 main().catch((err) => {
