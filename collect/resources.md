@@ -9,6 +9,7 @@
 [threejsresources.com](https://threejsresources.com/) ✰
 
 [tympanus.net/codrops/hub](https://tympanus.net/codrops/hub/)
+[awesome-threejs](https://github.com/AxiomeCG/awesome-threejs)
 
 ### Community
 
@@ -17,3 +18,11 @@
 ### Engines
 
 [hology.app](https://hology.app/)
+
+### Books
+
+[gamemath.com](https://gamemath.com/book/intro.html)
+
+[pbrbook.org](https://pbr-book.org/)
+
+[natureofcode.com](https://natureofcode.com/)
