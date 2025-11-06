@@ -21,6 +21,16 @@ This is my personal lab for Web 3D development. It is split into four categories
 
 - `src/`: for if this should become a website, this is where the code will be stored
 
+## Scripts
+
+### new-prototype.js
+
+CLI to create a new prototype directory and README.md file
+
+```bash
+node scripts/new-prototype.js
+```
+
 ## TODO
 
 - See `todo.md` as the working checklist.
