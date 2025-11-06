@@ -3,14 +3,49 @@
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Moving Shader</title>
+  </head>
+  <body>
+    <h1>Moving Shader</h1>
+    <canvas id="canvas"></canvas>
+  </body>
 </html>
+
+<script type="module" lang="ts">
+  import * as THREE from "three";
+
+  const canvas = document.getElementById("canvas");
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  const renderer = new THREE.WebGLRenderer({ canvas });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.position.z = 5;
+  renderer.render(scene, camera);
+</script>
+
+<style lang="scss" scoped>
+  body {
+    padding: 1rem;
+    color: white;
+  }
+
+  canvas {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #2a66c9;
+  }
+</style>
