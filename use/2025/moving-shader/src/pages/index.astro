@@ -18,168 +18,10 @@
 </html>
 
 <script>
-  import * as THREE from "three";
-  import getBendShaderMaterial from "~/webgl/getBendShaderMaterial";
-  import useScene from "~/webgl/useScene";
-  import usePerspectiveCamera from "~/webgl/usePerspectiveCamera";
+  import Experience from "~/webgl/experience";
 
-  const canvas = document.querySelector("[data-canvas]");
-  const { scene } = useScene();
-  const element = document.querySelector("[data-element]");
-  /* rect */
-  scene.userData.element = element;
-  scene.userData.boundingRect = scene.userData.element?.getBoundingClientRect();
-  scene.userData.updateRect = updateRect;
-  scene.userData.updateSizes = updateSizes;
-  /* shader material */
-  const material = getBendShaderMaterial();
-
-  const sizes = {
-    width: 0.5,
-    height:
-      (0.5 / scene.userData.boundingRect.width) *
-      scene.userData.boundingRect.height,
-  };
-  scene.userData.perspectiveCamera = usePerspectiveCamera(1, sizes, 50);
-  if (!canvas) {
-    throw new Error("Canvas not found");
-  }
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    alpha: true,
-    antialias: true,
-  });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
-
-  init();
-  tick();
-
-  // Update Loop
-  function tick() {
-    // Decay offset back to zero
-    const decay = 0.95;
-    if (material) {
-      material.uniforms.uOffset.value.multiplyScalar(decay);
-    }
-    renderer.render(scene, scene.userData.perspectiveCamera.camera);
-    requestAnimationFrame(tick);
-  }
-
-  //   Plane Object
-  const loader = new THREE.TextureLoader();
-  const texture = loader.load("/image.png");
-  texture.minFilter = THREE.LinearMipMapLinearFilter;
-  texture.generateMipmaps = false;
-
-  const worldSizes = scene.userData.perspectiveCamera.getWorldSizes();
-
-  const offsetStrength = {
-    x: 0.0006,
-    y: 0.0006,
-  };
-
-  material.uniforms.uMeshSize.value.x = worldSizes.width;
-  material.uniforms.uMeshSize.value.y = worldSizes.height;
-
-  material.uniforms.uTexture.value = texture;
-
-  // Mouse tracking
-  const mouse = {
-    current: new THREE.Vector2(0, 0),
-    previous: new THREE.Vector2(0, 0),
-  };
-  let initialLoad = true;
-
-  function onMouseMove(event: MouseEvent) {
-    mouse.previous.copy(mouse.current);
-    mouse.current.set(event.clientX, event.clientY);
-
-    // Normalize mouse position to [0, 1] range for UV space
-    const normalizedMouse = new THREE.Vector2(
-      event.clientX / window.innerWidth,
-      1.0 - event.clientY / window.innerHeight // Flip Y axis for UV coordinates
-    );
-    material.uniforms.uMouse.value.copy(normalizedMouse);
-
-    // Calculate delta between previous and current position
-    const mouseDeltaX = mouse.current.x - mouse.previous.x;
-    const mouseDeltaY = mouse.current.y - mouse.previous.y;
-
-    const roundedMouseDeltaX = Math.round(mouseDeltaX * 10) / 10;
-    const roundedMouseDeltaY = Math.round(mouseDeltaY * 10) / 10;
-
-    const offsetX = Math.max(-800, Math.min(800, roundedMouseDeltaX));
-    const offsetY = Math.max(-800, Math.min(800, -roundedMouseDeltaY));
-
-    if (
-      (roundedMouseDeltaX !== 0 || roundedMouseDeltaY !== 0) &&
-      !initialLoad
-    ) {
-      material.uniforms.uOffset.value.set(
-        offsetX * offsetStrength.x,
-        offsetY * offsetStrength.y
-      );
-    }
-
-    if (initialLoad) {
-      initialLoad = false;
-    }
-  }
-
-  window.addEventListener("mousemove", onMouseMove);
-
-  const plane = new THREE.PlaneGeometry(
-    (worldSizes.width * sizes.width) / window.innerWidth,
-    (worldSizes.height * sizes.height) / window.innerHeight,
-    32,
-    32
-  );
-  const mesh = new THREE.Mesh(plane, material);
-  mesh.position.set(0, 0, 0);
-
-  scene.add(mesh);
-
-  function init() {
-    scene.userData.perspectiveCamera.camera.aspect =
-      window.innerWidth / window.innerHeight;
-    scene.userData.perspectiveCamera.camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    updateRect();
-    updateSizes();
-  }
-
-  function updateRect() {
-    const rect = scene.userData.element.getBoundingClientRect();
-
-    scene.userData.boundingRect = {
-      width: rect.width,
-      height: rect.height,
-      right: rect.right,
-      left: rect.left,
-      bottom: rect.bottom,
-      top: rect.top,
-    };
-  }
-
-  function updateSizes() {
-    sizes.width = scene.userData.boundingRect.width;
-    sizes.height = scene.userData.boundingRect.height;
-    scene.userData.perspectiveCamera.updateCamera(sizes);
-  }
-
-  function onResize() {
-    updateRect();
-    updateSizes();
-
-    // resize all meshes);
-    console.log(scene);
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    scene.userData.perspectiveCamera.camera.updateProjectionMatrix();
-  }
-
-  window.addEventListener("resize", onResize);
+  const experience = new Experience();
+  experience.init();
 </script>
 
 <style lang="scss" scoped>
@@ -201,11 +43,12 @@
 
   canvas {
     position: fixed;
+    transform: scale(0.5);
     z-index: -1;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #2a66c9;
+    // background: #2a66c9;
   }
 </style>
